@@ -8,7 +8,9 @@
     "express": "^4.17.1",
     "mongoose": "^5.9.23"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/mongoose": "^5.11.97"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
