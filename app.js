@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 
+const { dbPass } = require('./config.json');
+
 const app = express();
 
 // middleware
@@ -12,9 +14,12 @@ app.use(express.json());
 app.set('view engine', 'ejs');
 
 // database connection
-const dbURI = 'mongodb+srv://ostemannen:H1W7i6KdK7P5a-7E1ZKVs1FYBC-5qhw7HlThWac96UwKgsKBtN@node-tutorials.j2nbgno.mongodb.net/?retryWrites=true&w=majority';
+const dbURI = `mongodb+srv://nodeAuth:${dbPass}@cluster1.aypkq0l.mongodb.net/node-auth?retryWrites=true&w=majority`;
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
-  .then((result) => app.listen(80))
+  .then((result) => {
+    app.listen(80);
+    console.log('Listening for requests on port', 80);
+  })
   .catch((err) => console.log(err));
 
 // routes
