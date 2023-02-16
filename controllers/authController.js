@@ -10,12 +10,22 @@ const handleErrors = (err) => {
         password: ''
     };
 
+    // incorrect email
+    if (err.message === 'incorrect email') {
+        errors.email = 'that email is not registered';
+    };
+
+    // incorrect password
+    if (err.message === 'incorrect password') {
+        errors.password = 'that password is incorrect';
+    };
+
     // duplicate error code
     if (err.code === 11000) {
         errors.email = 'That email is already registered';
 
         return errors;
-    }
+    };
 
     // validation errors
     if (err.message.includes('user validation failed')) {
@@ -24,7 +34,9 @@ const handleErrors = (err) => {
         });
 
         return errors;
-    }
+    };
+
+    return errors;
 }
 
 const maxAge = 60 * 60 * 24 * 3;
@@ -53,7 +65,10 @@ module.exports.signup_post = async (req, res) => {
 
         const token = createToken(user._id);
 
-        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000
+        });
         res.status(201).json({ user: user._id });
     } catch (err) {
         const errors = handleErrors(err);
@@ -64,6 +79,16 @@ module.exports.signup_post = async (req, res) => {
 module.exports.login_post = async (req, res) => {
     const { email, password } = req.body;
 
-    console.log(email, password);
-    res.send('user login');
+    try {
+        const user = await User.login(email, password);
+        const token = createToken(user._id);
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000
+        });
+        res.status(200).json({ user: user._id });
+    } catch (err) {
+        const errors = handleErrors(err);
+        res.status(400).json({ errors });
+    }
 }
